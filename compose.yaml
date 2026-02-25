@@ -1,0 +1,15 @@
+x-texlive-image:
+  image_repo: &texlive_image_repo ${TEXLIVE_IMAGE_REPO:-texlive/texlive}
+  image_tag: &texlive_image_tag ${TEXLIVE_IMAGE_TAG:-TL2024-historic}
+  image: &texlive_image ${TEXLIVE_IMAGE_REPO:-texlive/texlive}:${TEXLIVE_IMAGE_TAG:-TL2024-historic}
+
+services:
+  texd:
+    image: *texlive_image
+    working_dir: /workspace
+    volumes:
+      - ..:/workspace
+    command: ["sleep", "infinity"]
+    tty: true
+    stdin_open: true
+    init: true

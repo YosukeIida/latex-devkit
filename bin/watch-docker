@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+main="${1:-main.tex}"
+
+if ! command -v fswatch >/dev/null 2>&1; then
+  echo "ERROR: fswatch not found. Install via: brew install fswatch" >&2
+  exit 2
+fi
+
+find_project_root() {
+  local cursor
+  cursor="$(pwd -P)"
+  while [[ "${cursor}" != "/" ]]; do
+    if [[ -f "${cursor}/latexmkrc" ]]; then
+      echo "${cursor}"
+      return 0
+    fi
+    cursor="$(dirname "${cursor}")"
+  done
+  return 1
+}
+
+if ! project_root="$(find_project_root)"; then
+  echo "ERROR: latexmkrc was not found in current directory or parents." >&2
+  exit 2
+fi
+
+cd "${project_root}"
+
+"${script_dir}/latexmk-docker" "${main}" || true
+
+fswatch -o \
+  --exclude '.*' \
+  --include '\.tex$' \
+  --include '\.bib$' \
+  --include '\.(png|jpg|jpeg|pdf|eps|svg)$' \
+  . | while read -r _; do
+    "${script_dir}/latexmk-docker" "${main}" || true
+  done

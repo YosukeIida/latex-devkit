@@ -1,0 +1,25 @@
+{
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.latex.outDir": "./build",
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk-docker",
+      "command": "LATEX_DEVKIT_DIR/bin/latexmk-docker",
+      "args": [
+        "%DOCFILE%",
+        "%OUTDIR%"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexmk-docker",
+      "tools": [
+        "latexmk-docker"
+      ]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "first"
+}

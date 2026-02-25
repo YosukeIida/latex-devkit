@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+devkit_dir="$(cd "${script_dir}/.." && pwd -P)"
+workspace_root="$(cd "${devkit_dir}/.." && pwd -P)"
+compose_file="${devkit_dir}/compose.yaml"
+projects_dir="${workspace_root}/projects"
+service="texd"
+main="${1:-main.tex}"
+outdir_arg="${2:-}"
+
+find_project_root() {
+  local cursor
+  cursor="$(pwd -P)"
+  while [[ "${cursor}" != "/" ]]; do
+    if [[ -f "${cursor}/latexmkrc" ]]; then
+      echo "${cursor}"
+      return 0
+    fi
+    cursor="$(dirname "${cursor}")"
+  done
+  return 1
+}
+
+if ! project_root="$(find_project_root)"; then
+  echo "ERROR: latexmkrc was not found in current directory or parents." >&2
+  exit 2
+fi
+
+case "${project_root}" in
+  "${projects_dir}"/*) ;;
+  *)
+    echo "ERROR: project must be located under ${projects_dir}" >&2
+    exit 2
+    ;;
+esac
+
+proj_rel="${project_root#${projects_dir}/}"
+workspace_proj="/workspace/projects/${proj_rel}"
+
+workspace_outdir="${workspace_proj}"
+if [[ -n "${outdir_arg}" ]]; then
+  case "${outdir_arg}" in
+    "${project_root}"/*)
+      outdir_rel="${outdir_arg#${project_root}/}"
+      workspace_outdir="${workspace_proj}/${outdir_rel}"
+      ;;
+    /*)
+      # Ignore absolute paths outside the current project root.
+      workspace_outdir="${workspace_proj}"
+      ;;
+    *)
+      workspace_outdir="${workspace_proj}/${outdir_arg}"
+      ;;
+  esac
+fi
+
+if ! docker compose -f "${compose_file}" ps --status running --services | grep -qx "${service}"; then
+  echo "ERROR: ${service} is not running. Run: make -C ${devkit_dir} up" >&2
+  exit 2
+fi
+
+cmd="texbin=\$(ls -d /usr/local/texlive/*/bin/* 2>/dev/null | head -n 1); if [[ -n \"\${texbin}\" ]]; then export PATH=\"\${texbin}:\${PATH}\"; fi; mkdir -p $(printf '%q' "${workspace_outdir}") && cd $(printf '%q' "${workspace_proj}") && latexmk -r latexmkrc -interaction=nonstopmode -outdir=$(printf '%q' "${workspace_outdir}") $(printf '%q' "${main}")"
+docker compose -f "${compose_file}" exec -T "${service}" bash -lc "${cmd}"
