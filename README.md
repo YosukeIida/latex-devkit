@@ -2,6 +2,8 @@
 
 Portable LaTeX build and sync toolkit for a split workspace layout.
 
+- [初回プロジェクト import（Premium / Free）](docs/first-import.md)
+
 ## Workspace layout
 
 Clone this repo anywhere.  All runtime directories (`projects/`, `.secrets/`) live **inside** the cloned directory and are gitignored.
