@@ -20,7 +20,8 @@ NAME ?=
 OLIGNORE ?= .olignore
 DOWNLOAD_DIR ?= build
 
-LLEAF_BASE = uv run --project "$(CURDIR)" lleaf --cookie-path "$(COOKIE_PATH)" $(if $(strip $(NAME)),-n "$(NAME)",)
+LLEAF_BASE = uv run --project "$(CURDIR)" lleaf --cookie-path "$(COOKIE_PATH)"
+LLEAF_NAME = $(if $(strip $(NAME)),-n "$(NAME)",)
 
 .PHONY: help
 help:
@@ -94,7 +95,7 @@ lleaf-pull:
 	$(call REQUIRE_PROJ)
 	$(call REQUIRE_COOKIE)
 	$(call REQUIRE_OLIGNORE)
-	$(call RUN_IN_PROJ,$(LLEAF_BASE) pull -i "$(OLIGNORE)")
+	$(call RUN_IN_PROJ,$(LLEAF_BASE) pull $(LLEAF_NAME) -i "$(OLIGNORE)")
 
 .PHONY: lleaf-push
 lleaf-push:
@@ -102,7 +103,7 @@ lleaf-push:
 	$(call REQUIRE_PROJ)
 	$(call REQUIRE_COOKIE)
 	$(call REQUIRE_OLIGNORE)
-	$(call RUN_IN_PROJ,$(LLEAF_BASE) push -i "$(OLIGNORE)")
+	$(call RUN_IN_PROJ,$(LLEAF_BASE) push $(LLEAF_NAME) -i "$(OLIGNORE)")
 
 .PHONY: lleaf-download
 lleaf-download:
@@ -111,7 +112,7 @@ lleaf-download:
 	$(call REQUIRE_COOKIE)
 	$(call REQUIRE_OLIGNORE)
 	$(call RUN_IN_PROJ,mkdir -p "$(DOWNLOAD_DIR)")
-	$(call RUN_IN_PROJ,$(LLEAF_BASE) download --download-path "$(DOWNLOAD_DIR)" -i "$(OLIGNORE)")
+	$(call RUN_IN_PROJ,$(LLEAF_BASE) download $(LLEAF_NAME) --download-path "$(DOWNLOAD_DIR)" -i "$(OLIGNORE)")
 	@echo "Downloaded into: $(PROJECTS_DIR)/$(PROJ)/$(DOWNLOAD_DIR)/"
 
 .PHONY: vscode-init
