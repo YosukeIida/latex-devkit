@@ -20,7 +20,7 @@ NAME ?=
 OLIGNORE ?= .olignore
 DOWNLOAD_DIR ?= build
 
-LLEAF_BASE = uv run lleaf --cookie-path "$(COOKIE_PATH)" $(if $(strip $(NAME)),-n "$(NAME)",)
+LLEAF_BASE = uv run --project "$(CURDIR)" lleaf --cookie-path "$(COOKIE_PATH)" $(if $(strip $(NAME)),-n "$(NAME)",)
 
 .PHONY: help
 help:
