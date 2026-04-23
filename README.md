@@ -123,4 +123,27 @@ make lleaf-push PROJ=my-paper
 make lleaf-download PROJ=my-paper
 ```
 
-Set `NAME="Overleaf Project Name"` only when Overleaf project name differs from local directory name.
+### PROJECTS_DIR — プロジェクトの置き場所を変える
+
+デフォルトは `<WORKSPACE_ROOT>/projects/`。Overleaf 専用ディレクトリなど任意の場所を使う場合は `PROJECTS_DIR=` で指定する。
+
+```bash
+make lleaf-pull PROJ=my-paper PROJECTS_DIR=~/workspace/overleaf-projects
+make lleaf-push PROJ=my-paper PROJECTS_DIR=~/workspace/overleaf-projects
+```
+
+毎回入力するのが手間な場合は `.envrc` に追記しておく。
+
+```bash
+echo 'export PROJECTS_DIR=$HOME/workspace/overleaf-projects' >> .envrc
+direnv allow
+```
+
+### NAME — Overleaf プロジェクト名がローカルと異なる場合
+
+```bash
+# Overleaf 名: "My Paper 2026"、ローカルディレクトリ名: "my-paper"
+make lleaf-pull PROJ=my-paper NAME="My Paper 2026"
+```
+
+詳細な手順は [docs/first-import.md](docs/first-import.md) を参照。
