@@ -3,7 +3,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 devkit_dir="$(cd "${script_dir}/.." && pwd -P)"
-workspace_root="$(cd "${devkit_dir}/.." && pwd -P)"
+workspace_root="${devkit_dir}"
 compose_file="${devkit_dir}/compose.yaml"
 projects_dir="${workspace_root}/projects"
 service="texd"
@@ -61,5 +61,5 @@ if ! docker compose -f "${compose_file}" ps --status running --services | grep -
   exit 2
 fi
 
-cmd="texbin=\$(ls -d /usr/local/texlive/*/bin/* 2>/dev/null | head -n 1); if [[ -n \"\${texbin}\" ]]; then export PATH=\"\${texbin}:\${PATH}\"; fi; mkdir -p $(printf '%q' "${workspace_outdir}") && cd $(printf '%q' "${workspace_proj}") && latexmk -r latexmkrc -interaction=nonstopmode -outdir=$(printf '%q' "${workspace_outdir}") $(printf '%q' "${main}")"
+cmd="texbin=\$(ls -d /usr/local/texlive/*/bin/* 2>/dev/null | head -n 1); if [[ -n \"\${texbin}\" ]]; then export PATH=\"\${texbin}:\${PATH}\"; fi; mkdir -p $(printf '%q' "${workspace_outdir}") && cd $(printf '%q' "${workspace_proj}") && latexmk -norc -r latexmkrc -interaction=nonstopmode -outdir=$(printf '%q' "${workspace_outdir}") $(printf '%q' "${main}")"
 docker compose -f "${compose_file}" exec -T "${service}" bash -lc "${cmd}"

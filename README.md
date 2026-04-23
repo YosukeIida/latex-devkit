@@ -4,18 +4,25 @@ Portable LaTeX build and sync toolkit for a split workspace layout.
 
 ## Workspace layout
 
-```text
+Clone this repo anywhere.  All runtime directories (`projects/`, `.secrets/`) live **inside** the cloned directory and are gitignored.
 
-  latex-devkit/              # this public repo
+```text
+<anywhere>/latex-devkit/           # git clone git@github.com:YosukeIida/latex-devkit.git
   projects/
-    <project>/               # each TeX manuscript as independent git repo
-  .secrets/.olauth           # localleaf cookie (not committed)
+    <project>/                     # each TeX manuscript (not committed)
+  .secrets/.olauth                 # localleaf cookie (not committed)
+```
+
+`WORKSPACE_ROOT` defaults to the `latex-devkit` directory itself.  Override if needed:
+
+```bash
+make up WORKSPACE_ROOT=/some/other/path
 ```
 
 ## Design
 
-- Build infrastructure lives in `latex-devkit`.
-- Manuscripts live in `projects/*` as separate repos.
+- Build infrastructure lives in `latex-devkit` (this repo).
+- Manuscripts live in `projects/*` inside the workspace root (gitignored).
 - Local compile uses a long-running Docker service (`texd`) based on a prebuilt TeX Live image.
 - Overleaf sync is primarily git-remote based (`origin` + optional `overleaf`).
 - `localleaf (lleaf)` remains available as a fallback.
@@ -78,7 +85,7 @@ make up
 make vscode-init PROJ=my-paper
 ```
 
-3. Open `projects/my-paper` in VS Code and build with LaTeX Workshop.
+3. Open `<WORKSPACE_ROOT>/projects/my-paper` in VS Code and build with LaTeX Workshop.
 
 The configured tool calls `latex-devkit/bin/latexmk-docker`, which compiles inside `texd` via `docker compose exec`.
 
@@ -99,10 +106,10 @@ This pushes to `origin` first, then `overleaf` if configured.
 
 ## localleaf fallback
 
-Cookie location is fixed to:
+Cookie location defaults to:
 
 ```text
-.secrets/.olauth
+<WORKSPACE_ROOT>/.secrets/.olauth
 ```
 
 Commands:

@@ -1,6 +1,7 @@
 SHELL := /bin/bash
 
-WORKSPACE_ROOT ?= $(abspath ..)
+WORKSPACE_ROOT ?= $(CURDIR)
+export WORKSPACE_ROOT
 PROJECTS_DIR := $(WORKSPACE_ROOT)/projects
 SECRETS_DIR ?= $(WORKSPACE_ROOT)/.secrets
 COOKIE_PATH ?= $(SECRETS_DIR)/.olauth
@@ -61,7 +62,7 @@ build-local:
 	$(call REQUIRE_PROJ)
 	$(call REQUIRE_LATEXMKRC)
 	$(call REQUIRE_SERVICE_RUNNING)
-	$(call EXEC_IN_TEXD,latexmk -r latexmkrc -interaction=nonstopmode "$(MAIN)")
+	$(call EXEC_IN_TEXD,latexmk -norc -r latexmkrc -interaction=nonstopmode "$(MAIN)")
 
 .PHONY: watch-local
 watch-local:
@@ -117,7 +118,8 @@ lleaf-download:
 vscode-init:
 	$(call REQUIRE_PROJ)
 	@mkdir -p "$(PROJECTS_DIR)/$(PROJ)/.vscode"
-	@cp "$(CURDIR)/templates/vscode/settings.json" "$(PROJECTS_DIR)/$(PROJ)/.vscode/settings.json"
+	@sed "s|LATEX_DEVKIT_DIR|$(CURDIR)|g" "$(CURDIR)/templates/vscode/settings.json" \
+	  > "$(PROJECTS_DIR)/$(PROJ)/.vscode/settings.json"
 	@echo "Installed VS Code settings: $(PROJECTS_DIR)/$(PROJ)/.vscode/settings.json"
 
 define REQUIRE_CMD
