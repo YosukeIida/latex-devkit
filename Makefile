@@ -2,7 +2,9 @@ SHELL := /bin/bash
 
 WORKSPACE_ROOT ?= $(CURDIR)
 export WORKSPACE_ROOT
-PROJECTS_DIR := $(WORKSPACE_ROOT)/projects
+LATEX_PROJECTS_DIR ?=
+export LATEX_PROJECTS_DIR
+PROJECTS_DIR := $(if $(LATEX_PROJECTS_DIR),$(LATEX_PROJECTS_DIR),$(WORKSPACE_ROOT)/projects)
 SECRETS_DIR ?= $(WORKSPACE_ROOT)/.secrets
 COOKIE_PATH ?= $(SECRETS_DIR)/.olauth
 
@@ -62,7 +64,6 @@ build-local:
 	$(call REQUIRE_CMD,docker)
 	$(call REQUIRE_PROJ)
 	$(call REQUIRE_LATEXMKRC)
-	$(call REQUIRE_SERVICE_RUNNING)
 	$(call EXEC_IN_TEXD,latexmk -norc -r latexmkrc -interaction=nonstopmode "$(MAIN)")
 
 .PHONY: watch-local
@@ -176,5 +177,5 @@ define RUN_IN_PROJ
 endef
 
 define EXEC_IN_TEXD
-	@$(COMPOSE) exec -T $(SERVICE) bash -lc 'TEXBIN="$$(ls -d /usr/local/texlive/*/bin/* 2>/dev/null | head -n 1)"; if [ -n "$$TEXBIN" ]; then export PATH="$$TEXBIN:$$PATH"; fi; cd "/workspace/projects/$(PROJ)" && $(1)'
+	@$(COMPOSE) run --rm -T $(SERVICE) bash -lc 'TEXBIN="$$(ls -d /usr/local/texlive/*/bin/* 2>/dev/null | head -n 1)"; if [ -n "$$TEXBIN" ]; then export PATH="$$TEXBIN:$$PATH"; fi; cd "/workspace/projects/$(PROJ)" && $(1)'
 endef

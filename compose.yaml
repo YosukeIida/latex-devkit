@@ -9,6 +9,7 @@ services:
     working_dir: /workspace
     volumes:
       - ${WORKSPACE_ROOT}:/workspace
+      - ${LATEX_PROJECTS_DIR:-${WORKSPACE_ROOT}/projects}:/workspace/projects
     command: ["sleep", "infinity"]
     tty: true
     stdin_open: true
