@@ -91,6 +91,31 @@ make vscode-init PROJ=my-paper
 
 The configured tool calls `latex-devkit/bin/latexmk-docker`, which compiles inside `texd` via `docker compose exec`.
 
+## Zed + zed-latex (host)
+
+1. Start daemon container:
+
+```bash
+make up
+```
+
+2. Install project settings template:
+
+```bash
+make zed-init PROJ=my-paper
+```
+
+3. Open `<WORKSPACE_ROOT>/projects/my-paper` in Zed. Saving a `.tex` file triggers `latexmk-docker` and opens Skim automatically.
+
+4. Skim inverse search (Skim → Zed jump): **Skim > Preferences > Sync > PDF-TeX Sync support > Custom**
+
+   | Field | Value |
+   |---|---|
+   | Command | `open` |
+   | Arguments | `zed://file"%urlfile":%line` |
+
+   Then `Shift+⌘+click` in Skim jumps to the corresponding line in Zed.
+
 ## Git sync policy
 
 Inside each manuscript repo:

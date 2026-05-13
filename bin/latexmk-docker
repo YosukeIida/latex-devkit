@@ -7,7 +7,7 @@ workspace_root="${devkit_dir}"
 compose_file="${devkit_dir}/compose.yaml"
 projects_dir="${workspace_root}/projects"
 service="texd"
-main="${1:-main.tex}"
+main="$(basename "${1:-main.tex}")"
 outdir_arg="${2:-}"
 
 find_project_root() {

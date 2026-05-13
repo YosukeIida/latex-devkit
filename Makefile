@@ -40,6 +40,7 @@ help:
 	@echo "  make lleaf-push PROJ=<project> [NAME='Overleaf Name']"
 	@echo "  make lleaf-download PROJ=<project> [NAME='Overleaf Name']"
 	@echo "  make vscode-init PROJ=<project>"
+	@echo "  make zed-init PROJ=<project>"
 
 .PHONY: up pull-image down ps
 
@@ -123,6 +124,14 @@ vscode-init:
 	@sed "s|LATEX_DEVKIT_DIR|$(CURDIR)|g" "$(CURDIR)/templates/vscode/settings.json" \
 	  > "$(PROJECTS_DIR)/$(PROJ)/.vscode/settings.json"
 	@echo "Installed VS Code settings: $(PROJECTS_DIR)/$(PROJ)/.vscode/settings.json"
+
+.PHONY: zed-init
+zed-init:
+	$(call REQUIRE_PROJ)
+	@mkdir -p "$(PROJECTS_DIR)/$(PROJ)/.zed"
+	@sed "s|LATEX_DEVKIT_DIR|$(CURDIR)|g" "$(CURDIR)/templates/zed/settings.json" \
+	  > "$(PROJECTS_DIR)/$(PROJ)/.zed/settings.json"
+	@echo "Installed Zed settings: $(PROJECTS_DIR)/$(PROJ)/.zed/settings.json"
 
 define REQUIRE_CMD
 	@if ! command -v $(1) >/dev/null 2>&1; then \
