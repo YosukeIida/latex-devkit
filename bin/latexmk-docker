@@ -30,62 +30,52 @@ fi
 
 tex_setup="texbin=\$(ls -d /usr/local/texlive/*/bin/* 2>/dev/null | head -n 1); if [[ -n \"\${texbin}\" ]]; then export PATH=\"\${texbin}:\${PATH}\"; fi"
 
+build_cmd() {
+  local workspace_proj="$1"
+  # Only pass -outdir when caller explicitly provided one (arg2).
+  # Otherwise let latexmkrc's $out_dir take effect.
+  local outdir_flag=""
+  if [[ -n "${outdir_arg}" ]]; then
+    local workspace_outdir
+    case "${outdir_arg}" in
+      "${project_root}"/*)
+        workspace_outdir="${workspace_proj}/${outdir_arg#${project_root}/}"
+        ;;
+      /*)
+        workspace_outdir="${workspace_proj}"
+        ;;
+      *)
+        workspace_outdir="${workspace_proj}/${outdir_arg}"
+        ;;
+    esac
+    outdir_flag="-outdir=$(printf '%q' "${workspace_outdir}")"
+    echo "${tex_setup}; mkdir -p $(printf '%q' "${workspace_outdir}") && cd $(printf '%q' "${workspace_proj}") && latexmk -norc -r latexmkrc -interaction=nonstopmode ${outdir_flag} $(printf '%q' "${main}")"
+  else
+    echo "${tex_setup}; cd $(printf '%q' "${workspace_proj}") && latexmk -norc -r latexmkrc -interaction=nonstopmode $(printf '%q' "${main}")"
+  fi
+}
+
 case "${project_root}" in
   "${projects_dir}"/*)
     # Project is inside latex-devkit/projects/ — use the running texd container.
-    proj_rel="${project_root#${projects_dir}/}"
-    workspace_proj="/workspace/projects/${proj_rel}"
-
-    workspace_outdir="${workspace_proj}"
-    if [[ -n "${outdir_arg}" ]]; then
-      case "${outdir_arg}" in
-        "${project_root}"/*)
-          outdir_rel="${outdir_arg#${project_root}/}"
-          workspace_outdir="${workspace_proj}/${outdir_rel}"
-          ;;
-        /*)
-          workspace_outdir="${workspace_proj}"
-          ;;
-        *)
-          workspace_outdir="${workspace_proj}/${outdir_arg}"
-          ;;
-      esac
-    fi
+    workspace_proj="/workspace/projects/${project_root#${projects_dir}/}"
 
     if ! docker compose -f "${compose_file}" ps --status running --services | grep -qx "${service}"; then
       echo "ERROR: ${service} is not running. Run: make -C ${devkit_dir} up" >&2
       exit 2
     fi
 
-    cmd="${tex_setup}; mkdir -p $(printf '%q' "${workspace_outdir}") && cd $(printf '%q' "${workspace_proj}") && latexmk -norc -r latexmkrc -interaction=nonstopmode -outdir=$(printf '%q' "${workspace_outdir}") $(printf '%q' "${main}")"
-    docker compose -f "${compose_file}" exec -T "${service}" bash -lc "${cmd}"
+    docker compose -f "${compose_file}" exec -T "${service}" bash -lc "$(build_cmd "${workspace_proj}")"
     ;;
 
   *)
     # External project — spin up a one-shot container with the project mounted.
     workspace_proj="/workspace/ext-project"
 
-    workspace_outdir="${workspace_proj}"
-    if [[ -n "${outdir_arg}" ]]; then
-      case "${outdir_arg}" in
-        "${project_root}"/*)
-          outdir_rel="${outdir_arg#${project_root}/}"
-          workspace_outdir="${workspace_proj}/${outdir_rel}"
-          ;;
-        /*)
-          workspace_outdir="${workspace_proj}"
-          ;;
-        *)
-          workspace_outdir="${workspace_proj}/${outdir_arg}"
-          ;;
-      esac
-    fi
-
-    cmd="${tex_setup}; mkdir -p $(printf '%q' "${workspace_outdir}") && cd $(printf '%q' "${workspace_proj}") && latexmk -norc -r latexmkrc -interaction=nonstopmode -outdir=$(printf '%q' "${workspace_outdir}") $(printf '%q' "${main}")"
     WORKSPACE_ROOT="${devkit_dir}" \
     docker compose -f "${compose_file}" run --rm \
       -v "${project_root}:${workspace_proj}" \
       "${service}" \
-      bash -lc "${cmd}"
+      bash -lc "$(build_cmd "${workspace_proj}")"
     ;;
 esac
