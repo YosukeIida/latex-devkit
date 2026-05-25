@@ -10,9 +10,16 @@ service="texd"
 main="$(basename "${1:-main.tex}")"
 outdir_arg="${2:-}"
 
+# If $1 is an absolute path, start the project root search from its directory.
+if [[ -n "${1:-}" && "${1}" == /* ]]; then
+  _search_start="$(cd "$(dirname "${1}")" && pwd -P)"
+else
+  _search_start="$(pwd -P)"
+fi
+
 find_project_root() {
   local cursor
-  cursor="$(pwd -P)"
+  cursor="${_search_start}"
   while [[ "${cursor}" != "/" ]]; do
     if [[ -f "${cursor}/latexmkrc" ]]; then
       echo "${cursor}"

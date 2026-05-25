@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TEX_FILE="$1"
+ROW="${2:-0}"
+
+"$(dirname "$0")/latexmk-docker" "$TEX_FILE"
+
+PDF_FILE="$(dirname "$TEX_FILE")/build/$(basename "${TEX_FILE%.tex}").pdf"
+if [[ -f "$PDF_FILE" ]]; then
+  /Applications/Skim.app/Contents/SharedSupport/displayline -r -z -b "$ROW" "$PDF_FILE"
+fi
