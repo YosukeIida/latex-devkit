@@ -1,0 +1,9 @@
+[
+  {
+    "label": "LaTeX Build",
+    "command": "LATEX_DEVKIT_DIR/bin/latexmk-docker-skim",
+    "args": ["$ZED_FILE"],
+    "allow_concurrent_runs": false,
+    "reveal": "always"
+  }
+]

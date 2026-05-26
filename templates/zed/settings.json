@@ -1,13 +1,15 @@
+// Zed project settings for LaTeX.
+//
+// ビルドは keymap.json + tasks.json の "LaTeX Build" タスクで実行する。
+// texlab LSP の build / onSave は使わない（autosave 時にも発火してしまうため）。
+// ここでは inverse search 用の forwardSearch のみ texlab に設定する。
 {
   "lsp": {
     "texlab": {
       "settings": {
         "texlab": {
           "build": {
-            "executable": "LATEX_DEVKIT_DIR/bin/latexmk-docker",
-            "args": ["%f"],
-            "onSave": true,
-            "forwardSearchAfter": true,
+            "onSave": false,
           },
           "forwardSearch": {
             "executable": "/Applications/Skim.app/Contents/SharedSupport/displayline",

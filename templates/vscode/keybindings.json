@@ -1,0 +1,15 @@
+// VS Code keybindings for LaTeX projects using latex-devkit.
+//
+// cmd-s で latex-workshop.build を直接起動する。
+// settings.json で latex-workshop.latex.autoBuild.run を "never" に固定
+// しているため、autosave で build は走らない。cmd-s を押した瞬間だけビルドされる。
+//
+// Note: latex-workshop.build は内部でファイル保存も行う想定なので、
+// cmd-s のデフォルトの save 動作を上書きしても問題ない。
+[
+  {
+    "key": "cmd+s",
+    "command": "latex-workshop.build",
+    "when": "editorTextFocus && resourceExtname == .tex"
+  }
+]

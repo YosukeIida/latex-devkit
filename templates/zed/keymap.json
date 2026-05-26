@@ -1,0 +1,13 @@
+// Zed keymap for LaTeX projects using latex-devkit.
+//
+// cmd-s で "LaTeX Build" タスクを発火する。
+// 注意: Zed の autosave が ON のときは、ファイル保存はバックグラウンドで行われ
+// cmd-s 自体は発火しない。したがって "cmd-s 押下時のみ build" になる。
+[
+  {
+    "context": "Editor && extension == tex",
+    "bindings": {
+      "cmd-s": ["task::Spawn", {"task_name": "LaTeX Build"}]
+    }
+  }
+]

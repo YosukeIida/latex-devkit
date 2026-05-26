@@ -124,6 +124,13 @@ vscode-init:
 	@sed "s|LATEX_DEVKIT_DIR|$(CURDIR)|g" "$(CURDIR)/templates/vscode/settings.json" \
 	  > "$(PROJECTS_DIR)/$(PROJ)/.vscode/settings.json"
 	@echo "Installed VS Code settings: $(PROJECTS_DIR)/$(PROJ)/.vscode/settings.json"
+	@echo ""
+	@echo "Cmd+S build keybinding は VS Code の仕様上 user-scope のみ。"
+	@echo "次の内容を ~/Library/Application Support/Code/User/keybindings.json"
+	@echo "（または macOS 以外の同等パス）に追記してください:"
+	@echo "----"
+	@cat "$(CURDIR)/templates/vscode/keybindings.json"
+	@echo "----"
 
 .PHONY: zed-init
 zed-init:
@@ -131,7 +138,13 @@ zed-init:
 	@mkdir -p "$(PROJECTS_DIR)/$(PROJ)/.zed"
 	@sed "s|LATEX_DEVKIT_DIR|$(CURDIR)|g" "$(CURDIR)/templates/zed/settings.json" \
 	  > "$(PROJECTS_DIR)/$(PROJ)/.zed/settings.json"
+	@cp "$(CURDIR)/templates/zed/keymap.json" \
+	  "$(PROJECTS_DIR)/$(PROJ)/.zed/keymap.json"
+	@sed "s|LATEX_DEVKIT_DIR|$(CURDIR)|g" "$(CURDIR)/templates/zed/tasks.json" \
+	  > "$(PROJECTS_DIR)/$(PROJ)/.zed/tasks.json"
 	@echo "Installed Zed settings: $(PROJECTS_DIR)/$(PROJ)/.zed/settings.json"
+	@echo "Installed Zed keymap:   $(PROJECTS_DIR)/$(PROJ)/.zed/keymap.json"
+	@echo "Installed Zed tasks:    $(PROJECTS_DIR)/$(PROJ)/.zed/tasks.json"
 
 define REQUIRE_CMD
 	@if ! command -v $(1) >/dev/null 2>&1; then \
