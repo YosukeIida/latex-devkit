@@ -73,6 +73,13 @@ make watch-local PROJ=my-paper MAIN=main.tex
 make down
 ```
 
+## Build trigger policy: Cmd+S only
+
+Zed / VS Code どちらのテンプレートも、**autosave で勝手にビルドされず、`Cmd+S` を押したときだけビルドされる**設計にしてある。
+
+- **Zed**: `.tex` ファイル上で `Cmd+S` を押すと `LaTeX Build` タスクが起動する。Zed の autosave が有効でも `Cmd+S` 自体は発火しないため、編集中に勝手にビルドは走らない。
+- **VS Code**: `latex-workshop.latex.autoBuild.run` を `"never"` に固定したうえで、`Cmd+S` の keybinding を `latex-workshop.build` にバインドする。autosave の ON/OFF に依存せず、`Cmd+S` 押下時だけビルドされる。
+
 ## VS Code + LaTeX Workshop (host)
 
 1. Start daemon container:
@@ -87,7 +94,9 @@ make up
 make vscode-init PROJ=my-paper
 ```
 
-3. Open `<WORKSPACE_ROOT>/projects/my-paper` in VS Code and build with LaTeX Workshop.
+3. **Add `Cmd+S` keybinding (user-scope)**: VS Code の keybinding はワークスペースローカルに置けないため、`make vscode-init` の出力末尾に表示されるスニペットを、自分の User keybindings (`~/Library/Application Support/Code/User/keybindings.json`) に追記する。中身は `templates/vscode/keybindings.json` と同じ。
+
+4. Open `<WORKSPACE_ROOT>/projects/my-paper` in VS Code and press `Cmd+S` on a `.tex` file to build.
 
 The configured tool calls `latex-devkit/bin/latexmk-docker`, which compiles inside `texd` via `docker compose exec`.
 
@@ -105,7 +114,9 @@ make up
 make zed-init PROJ=my-paper
 ```
 
-3. Open `<WORKSPACE_ROOT>/projects/my-paper` in Zed. Saving a `.tex` file triggers `latexmk-docker` and opens Skim automatically.
+これで `.zed/settings.json`、`.zed/keymap.json`、`.zed/tasks.json` の 3 ファイルが展開される。`Cmd+S` が `LaTeX Build` タスクにバインドされる。
+
+3. Open `<WORKSPACE_ROOT>/projects/my-paper` in Zed. `.tex` ファイル上で `Cmd+S` を押すと `latexmk-docker-skim` が実行され、ビルド後に Skim が前面に出て該当行が表示される。
 
 4. Skim inverse search (Skim → Zed jump): **Skim > Preferences > Sync > PDF-TeX Sync support > Custom**
 
@@ -115,6 +126,18 @@ make zed-init PROJ=my-paper
    | Arguments | `zed://file"%urlfile":%line` |
 
    Then `Shift+⌘+click` in Skim jumps to the corresponding line in Zed.
+
+## Claude Code skills (optional)
+
+このリポジトリには latex-devkit を Claude Code から操作するための skill が同梱されている。
+
+```bash
+cp -r skills/* ~/.claude/skills/
+```
+
+これで Claude Code から `/latex-devkit`（ビルド操作の補助）と `/install-skill`（他の `.skill` ファイルを入れる）が使えるようになる。Claude Code を再起動すると反映される。
+
+詳細は各 `skills/<name>/SKILL.md` を参照。
 
 ## Git sync policy
 
