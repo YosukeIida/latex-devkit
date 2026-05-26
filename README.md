@@ -2,11 +2,13 @@
 
 Portable LaTeX build and sync toolkit for a split workspace layout.
 
-- [初回プロジェクト import（Premium / Free）](docs/first-import.md)
+> 日本語版は [README.ja.md](README.ja.md) を参照してください。
+
+- [First-time project import (Premium / Free)](docs/first-import.md)
 
 ## Workspace layout
 
-Clone this repo anywhere.  All runtime directories (`projects/`, `.secrets/`) live **inside** the cloned directory and are gitignored.
+Clone this repo anywhere. All runtime directories (`projects/`, `.secrets/`) live **inside** the cloned directory and are gitignored.
 
 ```text
 <anywhere>/latex-devkit/           # git clone git@github.com:YosukeIida/latex-devkit.git
@@ -15,7 +17,7 @@ Clone this repo anywhere.  All runtime directories (`projects/`, `.secrets/`) li
   .secrets/.olauth                 # localleaf cookie (not committed)
 ```
 
-`WORKSPACE_ROOT` defaults to the `latex-devkit` directory itself.  Override if needed:
+`WORKSPACE_ROOT` defaults to the `latex-devkit` directory itself. Override if needed:
 
 ```bash
 make up WORKSPACE_ROOT=/some/other/path
@@ -75,14 +77,14 @@ make down
 
 ## Build trigger policy: Cmd+S only
 
-Zed / VS Code どちらのテンプレートも、**autosave で勝手にビルドされず、`Cmd+S` を押したときだけビルドされる**設計にしてある。
+Both the Zed and VS Code templates are designed so that **builds run only when you press `Cmd+S`, never automatically on autosave**.
 
-- **Zed**: `.tex` ファイル上で `Cmd+S` を押すと `LaTeX Build` タスクが起動する。Zed の autosave が有効でも `Cmd+S` 自体は発火しないため、編集中に勝手にビルドは走らない。
-- **VS Code**: `latex-workshop.latex.autoBuild.run` を `"never"` に固定したうえで、`Cmd+S` の keybinding を `latex-workshop.build` にバインドする。autosave の ON/OFF に依存せず、`Cmd+S` 押下時だけビルドされる。
+- **Zed**: pressing `Cmd+S` on a `.tex` file spawns the `LaTeX Build` task. Even with Zed's autosave enabled, `Cmd+S` itself does not fire on every keystroke, so builds do not run during normal editing.
+- **VS Code**: `latex-workshop.latex.autoBuild.run` is pinned to `"never"`, and `Cmd+S` is bound to `latex-workshop.build`. Builds are triggered solely by `Cmd+S`, regardless of whether autosave is on or off.
 
 ## VS Code + LaTeX Workshop (host)
 
-1. Start daemon container:
+1. Start the daemon container:
 
 ```bash
 make up
@@ -94,7 +96,7 @@ make up
 make vscode-init PROJ=my-paper
 ```
 
-3. **Add `Cmd+S` keybinding (user-scope)**: VS Code の keybinding はワークスペースローカルに置けないため、`make vscode-init` の出力末尾に表示されるスニペットを、自分の User keybindings (`~/Library/Application Support/Code/User/keybindings.json`) に追記する。中身は `templates/vscode/keybindings.json` と同じ。
+3. **Add `Cmd+S` keybinding (user-scope)**: VS Code does not support workspace-local keybindings, so append the snippet printed at the end of `make vscode-init` to your User keybindings (`~/Library/Application Support/Code/User/keybindings.json`). The content matches `templates/vscode/keybindings.json`.
 
 4. Open `<WORKSPACE_ROOT>/projects/my-paper` in VS Code and press `Cmd+S` on a `.tex` file to build.
 
@@ -102,7 +104,7 @@ The configured tool calls `latex-devkit/bin/latexmk-docker`, which compiles insi
 
 ## Zed + zed-latex (host)
 
-1. Start daemon container:
+1. Start the daemon container:
 
 ```bash
 make up
@@ -114,9 +116,9 @@ make up
 make zed-init PROJ=my-paper
 ```
 
-これで `.zed/settings.json`、`.zed/keymap.json`、`.zed/tasks.json` の 3 ファイルが展開される。`Cmd+S` が `LaTeX Build` タスクにバインドされる。
+This deploys three files: `.zed/settings.json`, `.zed/keymap.json`, and `.zed/tasks.json`. `Cmd+S` is bound to the `LaTeX Build` task.
 
-3. Open `<WORKSPACE_ROOT>/projects/my-paper` in Zed. `.tex` ファイル上で `Cmd+S` を押すと `latexmk-docker-skim` が実行され、ビルド後に Skim が前面に出て該当行が表示される。
+3. Open `<WORKSPACE_ROOT>/projects/my-paper` in Zed. Pressing `Cmd+S` on a `.tex` file runs `latexmk-docker-skim`; after the build, Skim is brought to the foreground and jumps to the corresponding line.
 
 4. Skim inverse search (Skim → Zed jump): **Skim > Preferences > Sync > PDF-TeX Sync support > Custom**
 
@@ -129,15 +131,15 @@ make zed-init PROJ=my-paper
 
 ## Claude Code skills (optional)
 
-このリポジトリには latex-devkit を Claude Code から操作するための skill が同梱されている。
+This repository bundles Claude Code skills for operating latex-devkit.
 
 ```bash
 cp -r skills/* ~/.claude/skills/
 ```
 
-これで Claude Code から `/latex-devkit`（ビルド操作の補助）と `/install-skill`（他の `.skill` ファイルを入れる）が使えるようになる。Claude Code を再起動すると反映される。
+After this, `/latex-devkit` (build operations) and `/install-skill` (install other `.skill` files) become available in Claude Code. Restart Claude Code to pick them up.
 
-詳細は各 `skills/<name>/SKILL.md` を参照。
+See each `skills/<name>/SKILL.md` for details.
 
 ## Git sync policy
 
@@ -171,27 +173,27 @@ make lleaf-push PROJ=my-paper
 make lleaf-download PROJ=my-paper
 ```
 
-### PROJECTS_DIR — プロジェクトの置き場所を変える
+### PROJECTS_DIR — change where projects live
 
-デフォルトは `<WORKSPACE_ROOT>/projects/`。Overleaf 専用ディレクトリなど任意の場所を使う場合は `PROJECTS_DIR=` で指定する。
+Defaults to `<WORKSPACE_ROOT>/projects/`. To use an arbitrary location (e.g. a dedicated Overleaf directory), pass `PROJECTS_DIR=`.
 
 ```bash
 make lleaf-pull PROJ=my-paper PROJECTS_DIR=~/workspace/overleaf-projects
 make lleaf-push PROJ=my-paper PROJECTS_DIR=~/workspace/overleaf-projects
 ```
 
-毎回入力するのが手間な場合は `.envrc` に追記しておく。
+To avoid passing it every time, add it to `.envrc`:
 
 ```bash
 echo 'export PROJECTS_DIR=$HOME/workspace/overleaf-projects' >> .envrc
 direnv allow
 ```
 
-### NAME — Overleaf プロジェクト名がローカルと異なる場合
+### NAME — when the Overleaf project name differs from the local directory
 
 ```bash
-# Overleaf 名: "My Paper 2026"、ローカルディレクトリ名: "my-paper"
+# Overleaf name: "My Paper 2026", local directory name: "my-paper"
 make lleaf-pull PROJ=my-paper NAME="My Paper 2026"
 ```
 
-詳細な手順は [docs/first-import.md](docs/first-import.md) を参照。
+See [docs/first-import.md](docs/first-import.md) for the full first-time setup.
