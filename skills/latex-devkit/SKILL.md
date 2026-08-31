@@ -1,9 +1,6 @@
 ---
 name: latex-devkit
-description: >
-  latex-devkit を使って LaTeX を Docker でビルドする操作スキル。
-  「PDFをビルドして」「latexでコンパイルして」「ビルドして」などの表現がトリガー。
-  外部リポジトリの papers/ 以下のプロジェクトのビルドにも対応。
+description: latex-devkit を使って LaTeX を Docker でビルドする操作スキル。「PDFをビルドして」「latexでコンパイルして」「ビルドして」などの表現がトリガー。外部リポジトリの papers/ 以下のプロジェクトのビルドにも対応。
 ---
 
 # latex-devkit 操作スキル
@@ -12,7 +9,7 @@ description: >
 
 このスキルは [latex-devkit](https://github.com/YosukeIida/latex-devkit) を
 ローカルに clone してあることを想定する。clone 先のパスを `$LATEX_DEVKIT_DIR`
-として参照する（例: `~/workspace/latex-devkit`）。
+として参照する（例: `~/workspace/github.com/YosukeIida/latex-devkit`）。
 
 Docker + TeX Live によるローカルビルド環境。
 
