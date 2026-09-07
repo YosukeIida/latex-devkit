@@ -11,6 +11,9 @@ COOKIE_PATH ?= $(SECRETS_DIR)/.olauth
 COMPOSE_FILE := $(CURDIR)/compose.yaml
 COMPOSE := docker compose -f "$(COMPOSE_FILE)"
 SERVICE := texd
+# コンテナ内のビルド既定値（compose.yaml が :ro でマウントする）。
+# プロジェクトの latexmkrc より先に読ませることで、上書き可能な既定値になる。
+DEFAULTS_RC := /etc/latex-devkit/defaults.latexmkrc
 TEXLIVE_IMAGE_REPO ?= texlive/texlive
 TEXLIVE_IMAGE_TAG ?= TL2024-historic
 TEXLIVE_IMAGE := $(TEXLIVE_IMAGE_REPO):$(TEXLIVE_IMAGE_TAG)
@@ -65,7 +68,7 @@ build-local:
 	$(call REQUIRE_CMD,docker)
 	$(call REQUIRE_PROJ)
 	$(call REQUIRE_LATEXMKRC)
-	$(call EXEC_IN_TEXD,latexmk -norc -r latexmkrc -interaction=nonstopmode "$(MAIN)")
+	$(call EXEC_IN_TEXD,latexmk -norc -r $(DEFAULTS_RC) -r latexmkrc -interaction=nonstopmode "$(MAIN)")
 
 .PHONY: watch-local
 watch-local:

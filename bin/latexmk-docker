@@ -7,6 +7,9 @@ workspace_root="${devkit_dir}"
 compose_file="${devkit_dir}/compose.yaml"
 projects_dir="${workspace_root}/projects"
 service="texd"
+# コンテナ内のビルド既定値（compose.yaml が :ro でマウントする）。
+# プロジェクトの latexmkrc より先に読ませることで、上書き可能な既定値になる。
+defaults_rc="/etc/latex-devkit/defaults.latexmkrc"
 main="$(basename "${1:-main.tex}")"
 outdir_arg="${2:-}"
 
@@ -56,9 +59,9 @@ build_cmd() {
         ;;
     esac
     outdir_flag="-outdir=$(printf '%q' "${workspace_outdir}")"
-    echo "${tex_setup}; mkdir -p $(printf '%q' "${workspace_outdir}") && cd $(printf '%q' "${workspace_proj}") && latexmk -norc -r latexmkrc -interaction=nonstopmode ${outdir_flag} $(printf '%q' "${main}")"
+    echo "${tex_setup}; mkdir -p $(printf '%q' "${workspace_outdir}") && cd $(printf '%q' "${workspace_proj}") && latexmk -norc -r ${defaults_rc} -r latexmkrc -interaction=nonstopmode ${outdir_flag} $(printf '%q' "${main}")"
   else
-    echo "${tex_setup}; cd $(printf '%q' "${workspace_proj}") && latexmk -norc -r latexmkrc -interaction=nonstopmode $(printf '%q' "${main}")"
+    echo "${tex_setup}; cd $(printf '%q' "${workspace_proj}") && latexmk -norc -r ${defaults_rc} -r latexmkrc -interaction=nonstopmode $(printf '%q' "${main}")"
   fi
 }
 

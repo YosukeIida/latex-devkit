@@ -10,6 +10,9 @@ services:
     volumes:
       - ${WORKSPACE_ROOT}:/workspace
       - ${LATEX_PROJECTS_DIR:-${WORKSPACE_ROOT}/projects}:/workspace/projects
+      # ビルド既定値。compose ファイル相対で解決されるため、WORKSPACE_ROOT を
+      # 上書きしても常に latex-devkit 同梱のものが入る。
+      - ./latexmk/defaults.latexmkrc:/etc/latex-devkit/defaults.latexmkrc:ro
     command: ["sleep", "infinity"]
     tty: true
     stdin_open: true
