@@ -62,6 +62,21 @@ Apple Silicon の注意点:
 DOCKER_DEFAULT_PLATFORM=linux/amd64 make up
 ```
 
+## 生成物の置き場所（`$out_dir`）
+
+**デフォルトは `<project>/output/`。プロジェクトの `latexmkrc` が `$out_dir` を書いていればそちらが勝つ。**
+
+ビルドは `latexmk -norc -r latexmk/defaults.latexmkrc -r <project>/latexmkrc` の順で rc を読む。`latexmk` は `-r` をコマンドライン上の順序で処理するため、後から読まれるプロジェクトの `latexmkrc` が既定値を上書きできる。
+
+- 既定値の定義: [`latexmk/defaults.latexmkrc`](latexmk/defaults.latexmkrc)（`$out_dir` と、それに対で必要な `BIBINPUTS`）
+- コンテナへは `compose.yaml` が `/etc/latex-devkit/defaults.latexmkrc` として read-only でマウントする。compose ファイル相対で解決されるので、`WORKSPACE_ROOT` を上書きしても壊れない。
+
+エンジン（`platex` / `lualatex` 等）や `$force_mode` はプロジェクト固有の判断なので既定値には入れない。各プロジェクトの `latexmkrc` が持つ。
+
+明示的に上書きしたい場合は `bin/latexmk-docker` の第2引数で `-outdir=` を渡せる（脱出口）。ただしこれは `latexmkrc` の `$out_dir` より強い。
+
+> **注意**: 常駐コンテナ（`make up` した `texd`）は起動時のマウント構成を保持する。`defaults.latexmkrc` のマウントを追加した直後は `make down && make up` が必要。`make build-local` は毎回 `docker compose run --rm` で使い捨てコンテナを起動するため、こちらは再起動不要。
+
 ## 主要コマンド
 
 `latex-devkit` 直下で実行する。

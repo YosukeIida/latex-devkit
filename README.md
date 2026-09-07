@@ -62,6 +62,21 @@ Apple Silicon note:
 DOCKER_DEFAULT_PLATFORM=linux/amd64 make up
 ```
 
+## Output location (`$out_dir`)
+
+**Defaults to `<project>/output/`. A project's `latexmkrc` wins if it sets `$out_dir`.**
+
+Builds read rc files as `latexmk -norc -r latexmk/defaults.latexmkrc -r <project>/latexmkrc`. `latexmk` processes `-r` in command-line order, so the project's `latexmkrc`, read last, can override the defaults.
+
+- Defaults live in [`latexmk/defaults.latexmkrc`](latexmk/defaults.latexmkrc) (`$out_dir`, plus the `BIBINPUTS` setting it requires).
+- `compose.yaml` mounts it read-only at `/etc/latex-devkit/defaults.latexmkrc`. The mount is resolved relative to the compose file, so overriding `WORKSPACE_ROOT` does not break it.
+
+Engine choice (`platex` / `lualatex` / …) and `$force_mode` are per-project decisions and are deliberately not in the defaults.
+
+To override explicitly, pass an out dir as the second argument to `bin/latexmk-docker`; it becomes `-outdir=`, which beats `latexmkrc`.
+
+> **Note**: The long-running `texd` container (from `make up`) keeps the mount set it was created with, so run `make down && make up` once after adding this mount. `make build-local` starts a throwaway container via `docker compose run --rm` every time and needs no restart.
+
 ## Core commands
 
 Run these from `latex-devkit`.

@@ -36,8 +36,8 @@ cd "$LATEX_DEVKIT_DIR"
 make build-local PROJ=<プロジェクト名> MAIN=main.tex LATEX_PROJECTS_DIR=$PAPERS
 ```
 
-PDF は `$PAPERS/<プロジェクト名>/build/` に生成される
-（プロジェクトの `latexmkrc` に `$out_dir = 'build'` を設定済みであれば）。
+PDF は `$PAPERS/<プロジェクト名>/output/` に生成される
+（`output` は latex-devkit の既定値。プロジェクトの `latexmkrc` が `$out_dir` を書いていればそちらが優先される）。
 
 ### 別プロジェクトを追加するとき
 
@@ -65,7 +65,7 @@ $bibtex    = 'pbibtex';
 $dvipdf    = 'dvipdfmx %O -o %D %S';
 $makeindex = 'mendex %O -o %D %S';
 $pdf_mode  = 3;
-$out_dir   = 'build';
+# $out_dir は latex-devkit の既定値 'output' が入る。変えたいときだけ書く。
 ```
 
 ---
