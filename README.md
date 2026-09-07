@@ -146,15 +146,22 @@ This deploys three files: `.zed/settings.json`, `.zed/keymap.json`, and `.zed/ta
 
 ## Claude Code skills (optional)
 
-This repository bundles Claude Code skills for operating latex-devkit.
+This repository bundles a Claude Code skill for operating latex-devkit at
+`skills/latex-devkit/SKILL.md`. It uses the layout `gh skill` recognizes, so you can
+inspect it before adopting it:
 
 ```bash
-cp -r skills/* ~/.claude/skills/
+gh skill preview YosukeIida/latex-devkit latex-devkit
 ```
 
-After this, `/latex-devkit` (build operations) and `/install-skill` (install other `.skill` files) become available in Claude Code. Restart Claude Code to pick them up.
+How you install it is up to you. If you manage your dotfiles with git or Nix, prefer
+your existing vendor/symlink mechanism. Otherwise:
 
-See each `skills/<name>/SKILL.md` for details.
+```bash
+cp -r skills/latex-devkit ~/.claude/skills/
+```
+
+Restart Claude Code and `/latex-devkit` becomes available.
 
 ## Git sync policy
 

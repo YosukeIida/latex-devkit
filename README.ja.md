@@ -146,15 +146,22 @@ make zed-init PROJ=my-paper
 
 ## Claude Code skills（任意）
 
-このリポジトリには latex-devkit を Claude Code から操作するための skill が同梱されている。
+このリポジトリは latex-devkit を Claude Code から操作するための skill を
+`skills/latex-devkit/SKILL.md` に同梱している。`gh skill` が認識する標準レイアウトなので、
+取り込む前に中身を確認できる。
 
 ```bash
-cp -r skills/* ~/.claude/skills/
+gh skill preview YosukeIida/latex-devkit latex-devkit
 ```
 
-これで Claude Code から `/latex-devkit`（ビルド操作の補助）と `/install-skill`（他の `.skill` ファイルを入れる）が使えるようになる。Claude Code を再起動すると反映される。
+配置は各自の管理方式に任せる。git や Nix で dotfiles を管理しているなら、
+そちらの vendor / symlink の仕組みに乗せるのが望ましい。特に管理していなければ:
 
-詳細は各 `skills/<name>/SKILL.md` を参照。
+```bash
+cp -r skills/latex-devkit ~/.claude/skills/
+```
+
+Claude Code を再起動すると `/latex-devkit` が使えるようになる。
 
 ## Git 同期ポリシー
 
