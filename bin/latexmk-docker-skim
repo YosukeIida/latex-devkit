@@ -6,7 +6,22 @@ ROW="${2:-0}"
 
 "$(dirname "$0")/latexmk-docker" "$TEX_FILE"
 
-PDF_FILE="$(dirname "$TEX_FILE")/build/$(basename "${TEX_FILE%.tex}").pdf"
+PROJ_DIR="$(dirname "$TEX_FILE")"
+
+# ビルド先はプロジェクトの latexmkrc の $out_dir が正。書かれていなければ
+# latexmk/defaults.latexmkrc の既定値 'output' に落ちる。
+# ここでコンテナを起こして latexmk に解決させると Cmd+S のたびに
+# 起動コストが乗るため、latexmkrc をテキストとして読む。
+out_dir=""
+if [[ -f "${PROJ_DIR}/latexmkrc" ]]; then
+  out_dir="$(sed -n "s/^[[:space:]]*\$out_dir[[:space:]]*=[[:space:]]*['\"]\([^'\"]*\)['\"].*/\1/p" \
+    "${PROJ_DIR}/latexmkrc" | tail -n 1)"
+fi
+out_dir="${out_dir:-output}"
+
+PDF_FILE="${PROJ_DIR}/${out_dir}/$(basename "${TEX_FILE%.tex}").pdf"
 if [[ -f "$PDF_FILE" ]]; then
   /Applications/Skim.app/Contents/SharedSupport/displayline -r -z -b "$ROW" "$PDF_FILE"
+else
+  echo "WARNING: PDF not found: ${PDF_FILE}" >&2
 fi

@@ -2,14 +2,19 @@
   "files.autoSave": "afterDelay",
   "files.autoSaveDelay": 1000,
   "latex-workshop.latex.autoBuild.run": "never",
-  "latex-workshop.latex.outDir": "./build",
+  // latexmk/defaults.latexmkrc の既定値に合わせる。
+  // プロジェクトの latexmkrc が $out_dir を別の値にしている場合は、
+  // この行もその値に合わせて書き換える（LaTeX Workshop 側は PDF の
+  // 場所を知るためだけにこの設定を使う）。
+  "latex-workshop.latex.outDir": "./output",
   "latex-workshop.latex.tools": [
     {
       "name": "latexmk-docker",
       "command": "LATEX_DEVKIT_DIR/bin/latexmk-docker",
+      // %OUTDIR% は渡さない。渡すと latexmk-docker が -outdir= に変換し、
+      // プロジェクトの latexmkrc の $out_dir を上書きしてしまう。
       "args": [
-        "%DOCFILE%",
-        "%OUTDIR%"
+        "%DOCFILE%"
       ]
     }
   ],
